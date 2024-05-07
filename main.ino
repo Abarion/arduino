@@ -1,11 +1,15 @@
-#include <SPI.h>      //include the SPI bus library
-#include <MFRC522.h>  //include the RFID reader library
-#include <Keypad.h>
-#include <SoftwareSerial.h>
+#include <SPI.h> 
+#include <MFRC522.h>
+#include <Keypad.h> 
+#include <SoftwareSerial.h> 
 
-#define SS_PIN 10  //slave select pin
+
+// define pins and variables for the libarys and the arduino 
+
+// MFRC522 
+#define SS_PIN 10 
 #define RST_PIN 9
-#define RST_PIN 5  //reset pin
+#define RST_PIN 5 
 class FGRFIDHelper {
 private:
   MFRC522 mfrc522;
@@ -27,8 +31,10 @@ public:
   int fromSplitBytes(byte data[]);
   byte *toSplitBytes(int number);
 };
-
+ // Software Serial
 SoftwareSerial mySerial(A5, A4);
+
+// Keypad
 const byte ROWS = 4;  // number of rows
 const byte COLS = 3;  // number of columns
 char keys[ROWS][COLS] = {
@@ -43,8 +49,7 @@ Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
 FGRFIDHelper helper;
 
-int numbers3 = 0;
-char numbers[6];
+// setup function
 void setup() {
 
   Serial.begin(9600);
@@ -54,11 +59,15 @@ void setup() {
   memset(numbers, 0, 6);
 }
 
+// define variables
 bool read = false;
 int arrIndex = 0;
+int numbersToWriteReadOnRFID = 0;
+char numbers[6];
 
+// loop function
 void loop() {
-  // mySerial.print("test\n");
+// get the inputs and save them in an array. # = confirmed, * = go back one index, and send data to the nano
   char key = keypad.getKey();
   if (key != NO_KEY) {
     
@@ -76,7 +85,7 @@ void loop() {
     } else if(key == '*') {
       arrIndex--;
     } else if(key == '#') {
-      numbers3 = atoi(numbers);
+      numbersToWriteReadOnRFID = atoi(numbers);
       mySerial.print("Bestaetigt");
       delay(5000);
       mySerial.print("Ihr Betrag ");
@@ -90,15 +99,15 @@ void loop() {
       // READ
       Serial.println("RFID Num:");
       mySerial.print("RFID Num:");
-      int numbers3 = helper.readNumber(2);
-      Serial.println(numbers3);
-      mySerial.println(numbers3);
+      int numbersToWriteReadOnRFID = helper.readNumber(2);
+      Serial.println(numbersToWriteReadOnRFID);
+      mySerial.println(numbersToWriteReadOnRFID);
       read = true;
     } else {
       //WRITE
       Serial.println("Writing RFID");
       mySerial.print("Writing RFID");
-      helper.writeNumber(2, numbers3);
+      helper.writeNumber(2, numbersToWriteReadOnRFID);
       read = false;
     }
   }
