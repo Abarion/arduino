@@ -115,7 +115,7 @@ void loop() {
 }
 
 
-// Siehe Dokumentation von FG, PW
+// Siehe Code von FG
 FGRFIDHelper::FGRFIDHelper() {
   mfrc522 = MFRC522(SS_PIN, RST_PIN);
 }
